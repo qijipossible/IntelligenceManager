@@ -5,11 +5,17 @@
 <hibernate-configuration>
 	<session-factory ><!-- name="foo"-->
 		<property name="show_sql">true</property>
+		<!-- 
 		<property name="hibernate.dialect">org.hibernate.dialect.MySQL5Dialect</property>
 		<property name="hibernate.connection.driver_class">com.mysql.jdbc.Driver</property>
+		 
 		<property name="hibernate.connection.url">
 			jdbc:mysql://localhost:3306/intelligencemanager?useUnicode=true&amp;characterEncoding=utf-8&amp;createDatabaseIfNotExist=true
-		</property>
+		</property>-->
+		<property name="hibernate.connection.url">jdbc:derby:myDatabase;create=true </property>
+		<property name="hibernate.connection.driver_class">org.apache.derby.jdbc.EmbeddedDriver</property>
+		<property name="hibernate.dialect">org.hibernate.dialect.DerbyDialect</property>
+		
 		<property name="hibernate.connection.username">root</property>
 		<property name="hibernate.connection.password">123456</property>
 
