@@ -182,6 +182,26 @@ public class TestDatabase {
 		assertEquals(1, list.size());
 	}
 	
+	@Test
+	public void testSaveLongString() throws Exception{
+		try {
+			Record record = new Record();
+			String s = "1";
+			for(int i=0;i < 4096;i++){
+				s += "啊啊啊";
+			}
+			record.setContent(s);
+			DatabaseHelper.save(record);
+		} catch (Exception e) {
+			e.printStackTrace();
+			fail();
+		}
+
+		
+	}
+	
+	
+	
 	private int countAll(){
 		Session session = HibernateUtil.getSession();
 		int r = session.createQuery("from Record").list().size();

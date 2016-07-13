@@ -27,12 +27,16 @@ public class HibernateUtil {
             Session session = factory.openSession();
             String columns[] = new String[] {"content","title","author","type","other","baseUrl"};   
             Query query;
-//            for(String column : columns){
-//            	String s = "ALTER TABLE `record` CHANGE `"+column+"` `"+column+"` TEXT CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL;";
-//            	//System.out.println(s);
-//            	query = session.createSQLQuery(s);
-//            	query.executeUpdate();
-//            }
+            for(String column : columns){
+            	//mysql
+            	//String s = "ALTER TABLE `record` CHANGE `"+column+"` `"+column+"` TEXT CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL;";
+            	//derby
+            	String s = "alter table  record alter column  "+column+" set data type  VARCHAR(30000)";
+
+            	//System.out.println(s);
+            	query = session.createSQLQuery(s);
+            	query.executeUpdate();
+            }
             session.close();
 		} catch (Exception e) {
 			// TODO: handle exception
