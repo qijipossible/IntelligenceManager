@@ -14,7 +14,7 @@ import org.hibernate.criterion.Restrictions;
 
 import entity.Record;
 import util.ClassUtil;
-
+ 
 
 //readme: 具体用法可以参考 database.TestDataBase 的测试用例
 /**
@@ -31,7 +31,7 @@ public class DatabaseHelper {
 	}
 	private Command currentCommand;
 	private Class<?> TargetClass;
-	private List<QueryPair> whereLimit = new ArrayList<>();
+	private List<Pair> whereLimit = new ArrayList<>();
 	private QueryLogic whereLogic = QueryLogic.and;
 	private String sortKey = null;
 	private SortOrder order = null;
@@ -52,7 +52,7 @@ public class DatabaseHelper {
 	 * @param pair key-value pair
 	 * @return
 	 */
-	public DatabaseHelper where(QueryPair pair){
+	public DatabaseHelper where(Pair pair){
 		whereLimit.add(pair);
 		return this;
 	}
@@ -91,7 +91,7 @@ public class DatabaseHelper {
 			hql += " where ";
 			int size = whereLimit.size();
 			for(int i=0;i<size;i++){
-				QueryPair pair = whereLimit.get(i);
+				Pair pair = whereLimit.get(i);
 				hql += " a."+pair.key+" = :"+pair.key+" ";
 				if(i != size-1){
 					hql += " "+whereLogic+" ";
@@ -105,7 +105,7 @@ public class DatabaseHelper {
 		System.out.println("hql: "+hql);
 		Session session = HibernateUtil.getSession();
 		Query query = session.createQuery(hql);
-		for(QueryPair pair : whereLimit){
+		for(Pair pair : whereLimit){
 			if(pair.value instanceof String){
 				query.setString(pair.key, (String)pair.value);
 			}
@@ -133,15 +133,19 @@ public class DatabaseHelper {
 		hql += " where (a.content like '%"
 				+ keyWord + "%' or a.title like '%" + keyWord + "%')";
 		
-		hql += " and (";
 		List<String> word = type.getWords();
-		for(int i=0; i < word.size();i++){
-			hql += "a.type = '"+word.get(i)+"' ";
-			if(i != word.size()-1){
-				hql += " or ";
+		if(!word.isEmpty()){
+			hql += " and (";
+			
+			for(int i=0; i < word.size();i++){
+				hql += "a.type = '"+word.get(i)+"' ";
+				if(i != word.size()-1){
+					hql += " or ";
+				}
 			}
+			hql += ")";
 		}
-		hql += ")";
+
 		hql += "order by a.saveTime desc";
 		//System.out.println(hql);
 		Query query = session.createQuery(hql);
@@ -188,6 +192,79 @@ public class DatabaseHelper {
 	}
 	
 	/**
+	 * search keyword by year and type<br/>
+	 * to add multiple keywords insert space between keywords <br/>
+	 * to select all record without year , argument year should be "".
+	 * @param keyWords
+	 * @param year
+	 * @param type
+	 * @return
+	 */
+	public static List<Record> search(String keyWords,String year,SearchType type){
+		Session session = HibernateUtil.getSession();
+		String hql = "from Record a";
+		
+		hql += " where ";
+		String wordList[] = keyWords.split(" ");
+		
+		boolean add = false;
+		for(int i=0; i < wordList.length;i++){
+			String keyWord = wordList[i];
+			if(keyWord.equals(""))continue;
+			if(add){
+				hql += " and ";
+			}
+			hql +=" (a.content like '%"
+					+ keyWord + "%' or a.title like '%" + keyWord + "%') ";
+			add = true;
+		}
+		List<String> word = type.getWords();
+		if(!word.isEmpty()){
+			hql += " and (";
+			
+			for(int i=0; i < word.size();i++){
+				hql += "a.type = '"+word.get(i)+"' ";
+				if(i != word.size()-1){
+					hql += " or ";
+				}
+			}
+			hql += ")";
+		}
+
+		Query query;
+		if(year.equals("")){
+			hql += "order by a.saveTime desc";
+			query = session.createQuery(hql);
+		}
+		else {
+			hql += " and (";
+
+			DateFormat  df = new SimpleDateFormat("yyyy-MM-dd");
+			Date start,end;
+			try {
+				start = df.parse(year+"-1-1");
+				end = df.parse((Integer.valueOf(year)+1)+"-1-1");
+			} catch (ParseException e) {
+				// TODO Auto-generated catch block
+				start = new Date(0);
+				end = new Date(Integer.MAX_VALUE);
+				e.printStackTrace();
+			}
+			hql += " a.saveTime >= :start and a.saveTime < :end";
+			hql += ")";
+			hql += "order by a.saveTime desc";
+			query = session.createQuery(hql);
+			query.setDate("start", start);
+			query.setDate("end", end);
+		}
+
+		List<Record> list = query.list();
+		session.close();
+		return list;
+	}
+	
+	
+	/**
 	 * count number of record with given conditions.
 	 * @param keyWord
 	 * @param type
@@ -213,6 +290,8 @@ public class DatabaseHelper {
 		session.close();
 		return (int) count;
 	}
+	
+	
 	
 	/**
 	 * count keyWord by year
@@ -262,11 +341,16 @@ public class DatabaseHelper {
 	 * @param object
 	 */
 	public static void save(Object object){
-		Session session = HibernateUtil.getSession();
-		Transaction transaction = session.beginTransaction();
-		session.save(object);
-		transaction.commit();
-		session.close();
+		try {
+			Session session = HibernateUtil.getSession();
+			Transaction transaction = session.beginTransaction();
+			session.save(object);
+			transaction.commit();
+			session.close();
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
 	}
 	
 	/**
@@ -308,9 +392,14 @@ public class DatabaseHelper {
 	}
 
 	public static void main(String args[]) {
+//		Session session = HibernateUtil.getSession();
+//		Query query = session.createQuery("select distinct a.author  from Record a");
+//		System.out.println(query.list());
+//		session.close();
+		
 		Session session = HibernateUtil.getSession();
-		Query query = session.createQuery("select distinct a.author  from Record a");
-		System.out.println(query.list());
-		session.close();
+		List<Record> list = session.createQuery("from Record a where a.content like '%%'").list();
+		System.err.println(list);
+		
 	}
 }
