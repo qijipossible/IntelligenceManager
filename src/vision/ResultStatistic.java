@@ -5,10 +5,9 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.GridLayout;
 import java.awt.Image;
-import java.io.FileInputStream;
-import java.io.IOException;
+import java.text.DecimalFormat;
+import java.util.List;
 
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
@@ -18,16 +17,30 @@ import javax.swing.border.EtchedBorder;
 
 import properties.Attributes;
 import properties.Fonts;
-import service.chart.tagcloud.Configuration;
-import service.chart.tagcloud.TagCloudGenerator;
-import service.chart.tagcloud.TagCloudHelper;
 
 public class ResultStatistic extends JPanel
 {
+	public void setResult(float[] index, List<List<String>> keywords)
+	{
+		this.index=index;
+		this.keywords=keywords;
+		this.setLayout(new BoxLayout(this,BoxLayout.Y_AXIS));
+		
+		module1Reset();
+		module2Reset();
+		module3Reset();
+	
+		this.invalidate();
+		this.repaint();
+		this.setVisible(true);
+	}
+	private float[] index;
+	private List<List<String>> keywords;
 	private JLabel[] note = new JLabel[9];
 	private JLabel[] label = new JLabel[9];
 	private JPanel[] panel = new JPanel[9];
 	private JLabel[] imagelabel = new JLabel[4];
+	private JLabel tagcloudJLabel = new JLabel();
 	
 	//模块1
 	private JPanel module1 = new JPanel();
@@ -39,8 +52,15 @@ public class ResultStatistic extends JPanel
 		gbl1.setConstraints(a, gbc1);
 		module1.add(a);
 	}
-	
-	private void module1_setup()
+	private void module1Reset()
+	{
+		DecimalFormat df =new DecimalFormat("0.00");
+		label[1].setText(df.format(index[0]));//全网评分
+		label[3].setText(df.format(index[1]));//政府评分
+		label[5].setText(df.format(index[2]));//媒体评分
+		label[7].setText(df.format(index[3]));//公众评分
+	}
+	private void module1Setup()
 	{
 		this.add(module1);
 		module1.setLayout(gbl1);
@@ -69,7 +89,7 @@ public class ResultStatistic extends JPanel
 		label[0].setText(Attributes.WHOLEWEB);
 		gbc1.gridwidth=10;
 		addComponent(label[1]);
-		label[1].setText("4.11");//TODO
+		label[1].setText("0.0");//全网评分
 		
 		gbc1.gridwidth=1;
 		addComponent(panel[3]);
@@ -77,7 +97,7 @@ public class ResultStatistic extends JPanel
 		label[2].setText(Attributes.GOVERNMENT);
 		gbc1.gridwidth=10;
 		addComponent(label[3]);
-		label[3].setText("4.22");//TODO
+		label[3].setText("0.0");//政府评分
 		
 		gbc1.gridwidth=1;
 		addComponent(panel[4]);
@@ -85,7 +105,7 @@ public class ResultStatistic extends JPanel
 		label[4].setText(Attributes.MEDIA);
 		gbc1.gridwidth=10;
 		addComponent(label[5]);
-		label[5].setText("4.33");//TODO
+		label[5].setText("0.0");//媒体评分
 		
 		gbc1.gridwidth=1;
 		addComponent(panel[5]);
@@ -93,7 +113,7 @@ public class ResultStatistic extends JPanel
 		label[6].setText(Attributes.PUBLIC);
 		gbc1.gridwidth=10;
 		addComponent(label[7]);
-		label[7].setText("4.44");//TODO
+		label[7].setText("0.0");//公众评分
 		
 		gbc1.weightx=1;
 		gbc1.gridwidth = GridBagConstraints.REMAINDER;
@@ -114,29 +134,16 @@ public class ResultStatistic extends JPanel
 		gbl2.setConstraints(a, gbc2);
 		module2.add(a);
 	}
-
-	private void tagcloud()
+	private void module2Reset()
 	{
-		//TODO
-		String str="神话中,25\n孩子,25\n柠檬水,25\n压缩,25\n美国,25\n柠檬,25\n就出,25\n黑暗中,25\n大脑,25\n小狗,24白色,18\n小部件,18\n企鹅,18\n薄荷,18\n低,18\n屋顶,17\n合资企业,17\n最爱,17\n鼻子,17\n太阳,17\n客户,17\n狗,17\n海洋,16\n处理,16\n粉色,16\n发现,15\n风险,15";
-		TagCloudHelper.getInstance().makeTagcloud(str,"./output/tagcloud.png");
-		try
-		{
-            Configuration.getInstance().load(new FileInputStream("./resource/config.properties"));
-        } catch (IOException e) 
-        {
-            e.printStackTrace();
-            return;
-        }
-		TagCloudGenerator tagCloud;
-		tagCloud = new TagCloudGenerator();
-		tagCloud.frame=MainWindow.mainFrame;
-		tagCloud.init();
-		panel[7].add(tagCloud,BorderLayout.CENTER);
-		tagCloud.stop();
+		ImageIcon image0 = new ImageIcon("./output/tagcloud.png");
+		tagcloudJLabel.setIcon(image0);
+		note[4].setText(Util.transFormat(keywords.get(1)));//政府关键词
+		note[6].setText(Util.transFormat(keywords.get(2)));//媒体关键词
+		note[8].setText(Util.transFormat(keywords.get(3)));//公众关键词
 	}
 	
-	private void module2_setup()
+	private void module2Setup()
 	{
 		this.add(module2);
 		module2.setLayout(gbl2);
@@ -154,34 +161,40 @@ public class ResultStatistic extends JPanel
 		note[2].setBorder(new EtchedBorder());
 		
 		//最左边的panel
-		gbc2.weightx=0.13;
+		gbc2.weightx=0.5;
 		gbc2.gridheight=4;
 		gbc2.gridwidth=8;
 		addComponent2(panel[1]);
 		
 		//第五行
+		gbc2.weightx=0;
 		gbc2.gridheight=1;		
 		gbc2.gridwidth=8;
 		addComponent2(label[8]);
 		label[8].setBackground(Color.WHITE);
 		label[8].setOpaque(true);
-		label[8].setText(Attributes.WHOLEWEB);
+		label[8].setText(Attributes.WHOLEWEB+"                                          ");
+		gbc2.weightx=1;
 		gbc2.gridwidth = GridBagConstraints.REMAINDER;
 		addComponent2(panel[0]);
 		
 		//第六行
+		gbc2.weightx=0;
 		gbc2.gridheight=3;
 		gbc2.gridwidth=8;
 		addComponent2(panel[7]);
-		panel[7].setLayout(new BorderLayout());	
-		tagcloud();
+		panel[7].setLayout(new BorderLayout());
+		panel[7].add(tagcloudJLabel,BorderLayout.CENTER);
+		
 		
 		//右三行
+		gbc2.weightx=0.5;
 		gbc2.gridheight=3;
 		gbc2.gridwidth=1;
 		addComponent2(panel[8]);
 		
 		//政府
+		gbc2.weightx=1;
 		gbc2.weightx=0;
 		gbc2.gridheight=1;
 		gbc2.gridwidth=1;
@@ -193,7 +206,7 @@ public class ResultStatistic extends JPanel
 		gbc2.weightx=1;
 		gbc2.gridwidth = GridBagConstraints.REMAINDER;
 		addComponent2(note[4]);
-		note[4].setText("随便  随便  随便  随便  随便");
+		note[4].setText("");//政府关键词
 		note[4].setFont(Fonts.KEYWORD);
 		
 		//媒体
@@ -207,7 +220,7 @@ public class ResultStatistic extends JPanel
 		gbc2.weightx=1;
 		gbc2.gridwidth = GridBagConstraints.REMAINDER;
 		addComponent2(note[6]);
-		note[6].setText("随便  随便  随便  随便  随便");
+		note[6].setText("");//媒体关键词
 		note[6].setFont(Fonts.KEYWORD);
 		
 		//公众
@@ -221,7 +234,7 @@ public class ResultStatistic extends JPanel
 		gbc2.weightx=1;
 		gbc2.gridwidth = GridBagConstraints.REMAINDER;
 		addComponent2(note[8]);
-		note[8].setText("随便  随便  随便  随便  随便");
+		note[8].setText("");//公众关键词
 		note[8].setFont(Fonts.KEYWORD);
 		
 		//第六行
@@ -238,8 +251,19 @@ public class ResultStatistic extends JPanel
 		gbl3.setConstraints(a, gbc3);
 		module3.add(a);
 	}
-	
-	private void module3_setup()
+	private void module3Reset()
+	{
+		ImageIcon image1 = new ImageIcon("./output/year_comments.jpg");
+		image1.setImage(image1.getImage().getScaledInstance(445, 370, Image.SCALE_DEFAULT));
+		imagelabel[1].setIcon(image1);
+		ImageIcon image2 = new ImageIcon("./output/source.jpg");
+		image2.setImage(image2.getImage().getScaledInstance(445, 370, Image.SCALE_DEFAULT));
+		imagelabel[2].setIcon(image2);
+		ImageIcon image3 = new ImageIcon("./output/motion.jpg");
+		image3.setImage(image3.getImage().getScaledInstance(445, 370, Image.SCALE_DEFAULT));
+		imagelabel[3].setIcon(image3);
+	}
+	private void module3Setup()
 	{
 		this.add(module3);
 		module3.setLayout(gbl3);
@@ -288,10 +312,10 @@ public class ResultStatistic extends JPanel
 			else
 				label[i].setFont(Fonts.opinion_title);
 		}
-		this.setLayout(new BoxLayout(this,BoxLayout.Y_AXIS));
-		module1_setup();
-		module2_setup();
-		module3_setup();		
+		module1Setup();
+		module2Setup();
+		module3Setup();	
+		this.setVisible(false);
 	}
 
 }

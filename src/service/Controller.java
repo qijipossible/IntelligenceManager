@@ -1,10 +1,16 @@
 package service;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.JButton;
 import javax.swing.JPanel;
 
+import service.chart.Chart;
+import service.chart.tagcloud.TagCloud;
+import service.motion.Motion;
 import spider.helper.Crawler;
+import util.RecordTrans;
 import vision.AllData;
 import vision.MainWindow;
 import vision.ResultStatistic;
@@ -15,15 +21,36 @@ import entity.Record;
 
 public class Controller {
 	
-	public static void startCrawl(String keyword){
+	public static boolean isrunning = false;
+	private static Crawler crawler = new Crawler();
+	public static void startCrawl(String keyword)
+	{
+		DataManager.setKeyword(keyword);
+		isrunning = true;
 		boolean[] options = {true,true,true,true,false,false};
-		new Crawler(keyword, options);
+		crawler.start(keyword, options);
+	}
+	
+	public static void stopCrawl()
+	{
+		isrunning = false;
+		crawler.stop();
 	}
 
 	public static void showResult(String keyword, SearchResult panel1, ResultStatistic panel2, AllData panel3){
-		List<Record> records;
-		records = DatabaseHelper.search(keyword, SearchType.GOVMEDIA);
-		panel1.setResult(records);
+		
+		DataManager.setKeyword(keyword);
+		
+		TagCloud.TagCloud(DataManager.getKeywords().get(0));
+		new Chart();
+		
+		panel1.setResult(DataManager.getRecordsAll());
+		panel2.setResult(DataManager.getOpinionIndex(), DataManager.getKeywords());
+		panel3.setResult(DataManager.getRecordsAll());
+		
 	}
 	
+	public static void makeReport(){
+		
+	}
 }

@@ -24,6 +24,9 @@ public class MainWindow
 	SearchResult tab_panel1;
 	ResultStatistic tab_panel2;
 	AllData tab_panel3;
+	JButton search_button;
+	JButton result_button;
+	
 	public MainWindow()
 	{
 		setLookAndFeel();
@@ -56,11 +59,22 @@ public class MainWindow
 		north_panel.add(search_panel);
 		search_panel.setLayout(new BorderLayout());
 		
+		JButton makeReport_button = new JButton();
+		makeReport_button.setText(Attributes.MAKEREPORT);
+		makeReport_button.setFont(Fonts.searchButton);
+		makeReport_button.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent arg0){
+				Controller.makeReport();
+			}
+		});
+		search_panel.add(makeReport_button, BorderLayout.WEST);
+		
 		JPanel searchBar_panel=new JPanel();
 		search_panel.add(searchBar_panel,BorderLayout.EAST);
 		searchBar_panel.setLayout(new BoxLayout(searchBar_panel,BoxLayout.X_AXIS));
 		
-		searchBar_textField=new JTextField();
+		searchBar_textField=new JTextField("公车改革");
 		searchBar_panel.add(searchBar_textField);
 		searchBar_textField.setFont(Fonts.searchBar);
 		searchBar_textField.setToolTipText(Attributes.TOOLTIP);
@@ -70,24 +84,52 @@ public class MainWindow
 		button_panel.setLayout(new GridLayout(1,2));
 		searchBar_panel.add(button_panel);
 		
-		JButton search_button=new JButton(Attributes.SEARCHBUTTON);
+		search_button=new JButton();
+		search_button.setText(Attributes.SEARCHBUTTON);
+		search_button.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e){
+				if(Controller.isrunning){
+					search_button.setText(Attributes.SEARCHBUTTON);
+					if(getInput()!=null)
+						Controller.stopCrawl();
+				}
+				else{
+					search_button.setText(Attributes.STOPBUTTON);
+					Controller.startCrawl(getInput());
+				}
+
+				search_button.invalidate();
+				search_button.repaint();
+			}
+		});
+			
 		button_panel.add(search_button);
-		JButton result_button=new JButton(Attributes.RESULTBUTTON);
+		result_button=new JButton(Attributes.RESULTBUTTON);
 		button_panel.add(result_button);
 		search_button.setFont(Fonts.normal);
 		result_button.setFont(Fonts.normal);
-		search_button.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent arg0) {
-				super.mouseClicked(arg0);
-				Controller.startCrawl(getInput());
-			}
-		});
+		
 		result_button.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
 				super.mouseClicked(arg0);
-				Controller.showResult(getInput(), tab_panel1, tab_panel2, tab_panel3);
+				if(getInput()!=null){
+					result_button.setText(Attributes.RESULTBUTTON_PROCESSING);
+					result_button.invalidate();
+					result_button.repaint();
+					new Thread(new Runnable() {
+						
+						@Override
+						public void run() {
+							Controller.showResult(getInput(), tab_panel1, tab_panel2, tab_panel3);
+
+							result_button.setText(Attributes.RESULTBUTTON);
+							result_button.invalidate();
+							result_button.repaint();
+						}
+					}).start();
+				}
 			}
 		});
 		
@@ -102,8 +144,7 @@ public class MainWindow
 		
 		//三个tab(搜索结果)
 		tab_panel1=new SearchResult();
-		JScrollPane tab1 = new JScrollPane(tab_panel1);
-		tab_pane.addTab(Attributes.SEARCHRESULTTAB, null,tab1,null);
+		tab_pane.addTab(Attributes.SEARCHRESULTTAB, null,tab_panel1,null);
 		
 		//结果统计
 		tab_panel2 = new ResultStatistic();

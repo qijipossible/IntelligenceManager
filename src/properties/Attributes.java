@@ -12,7 +12,11 @@ public class Attributes
 	
 	public static final String SEARCHBUTTON = "搜索";
 	
+	public static final String STOPBUTTON = "停止";
+	
 	public static final String RESULTBUTTON = "显示结果";
+	
+	public static final String RESULTBUTTON_PROCESSING = "正在处理";
 	
 	public static final String SEARCHRESULTTAB = "搜索结果";
 	
@@ -37,5 +41,7 @@ public class Attributes
 	public static final String KEYWORD = "关键词";
 	
 	public static final String CHART = "统计图表";
+	
+	public static final String MAKEREPORT = "输出报告";
 			
 }

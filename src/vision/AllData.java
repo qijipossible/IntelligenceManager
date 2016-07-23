@@ -5,6 +5,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.List;
 
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
@@ -13,35 +14,18 @@ import javax.swing.JPopupMenu;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
+import entity.Record;
 import properties.Fonts;
 
 
 public class AllData extends JPanel
 {
-	private JTable table ;
-	private JPopupMenu menu;
-	int count=0;
-	private class MyTableModel extends DefaultTableModel
+	private List<Record> resultList;
+	public void setResult(List<Record> resultList)
 	{
-		public MyTableModel(int row,int column)
-		{
-			super(row,column);
-		}
-		@Override
-		public boolean isCellEditable(int arg0, int arg1) {
-			return false;
-		}
-
-		public String getColumnName(int n) {
-			String columnNames[] = { "类型", "标题", "时间", "作者", "其他",
-					"正文", "源地址" };
-			return columnNames[n];
-		}
-	};
-	
-	public AllData() 
-	{
-		int resultsize = 50;//TODO
+		this.resultList = resultList;
+		
+		int resultsize = resultList.size();//TODO
 		
 		final MyTableModel model = new MyTableModel(resultsize, 7);
 		table = new JTable(model);
@@ -53,13 +37,17 @@ public class AllData extends JPanel
 		table.setFont(Fonts.normal);
 
 		//TODO
-		model.setValueAt("媒体", 0, 0);
-		model.setValueAt("公车改革应该以维权为目标", 0, 1);
-		model.setValueAt("2009-01-01", 0, 2);
-		model.setValueAt("cyy", 0, 3);
-		model.setValueAt("公车改革", 0, 4);
-		model.setValueAt("厅级干部有可能会下马，可能性", 0, 5);
-		model.setValueAt("http://www.baidu.com", 0, 6);
+		
+		for(int i=0;i<resultsize;i++)
+		{
+			model.setValueAt(resultList.get(i).getType(), i, 0);
+			model.setValueAt(resultList.get(i).getTitle(), i, 1);
+			model.setValueAt(resultList.get(i).getContent(), i, 2);
+			model.setValueAt(resultList.get(i).getSaveTime().toString().substring(0, 10), i, 3);
+			model.setValueAt(resultList.get(i).getBaseUrl(), i,4);
+			model.setValueAt(resultList.get(i).getAuthor(), i, 5);
+			model.setValueAt(resultList.get(i).getOther(), i, 6);
+		}
 		
 		menu = new JPopupMenu();
 		JMenuItem item = new JMenuItem("删除该行");
@@ -94,5 +82,30 @@ public class AllData extends JPanel
 				}
 			}
 		});
+		
+		this.validate();
+		this.repaint();
+		
 	}
+	private JTable table ;
+	private JPopupMenu menu;
+	int count=0;
+	private class MyTableModel extends DefaultTableModel
+	{
+		public MyTableModel(int row,int column)
+		{
+			super(row,column);
+		}
+		@Override
+		public boolean isCellEditable(int arg0, int arg1) {
+			return false;
+		}
+
+		public String getColumnName(int n) {
+			String columnNames[] = { "类型", "标题", "正文", "时间", "源地址", "作者", "其他"};
+			return columnNames[n];
+		}
+	};
+	
+	
 }
