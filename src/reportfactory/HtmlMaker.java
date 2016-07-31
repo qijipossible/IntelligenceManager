@@ -175,11 +175,11 @@ public class HtmlMaker {
 		map.put("thirdPubPercent", Float.toString(indexPublicList.get(2).getValue()*100.0f/nums[4]));
 		map.put("thirdPubIndex", indexPublicList.get(2).getKey());
 
-		map.put("keywordAll", util.RecordTrans.strings2stringWithComma(keywords.get(0)));
-		map.put("keywordGov", util.RecordTrans.strings2stringWithComma(keywords.get(1)));
-		map.put("keywordMedia", util.RecordTrans.strings2stringWithComma(keywords.get(2)));
-		map.put("keywordPublic", util.RecordTrans.strings2stringWithComma(keywords.get(3)));
-		map.put("keywordHottestYear", util.RecordTrans.strings2stringWithComma(keywords.get(4)));
+		map.put("keywordAll", util.Transform.strings2stringWithComma(keywords.get(0)));
+		map.put("keywordGov", util.Transform.strings2stringWithComma(keywords.get(1)));
+		map.put("keywordMedia", util.Transform.strings2stringWithComma(keywords.get(2)));
+		map.put("keywordPublic", util.Transform.strings2stringWithComma(keywords.get(3)));
+		map.put("keywordHottestYear", util.Transform.strings2stringWithComma(keywords.get(4)));
 		String string = null;
 		for(int i=1;i<=4;i++){
 			for(int j=1;j<=4;j++){
