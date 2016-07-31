@@ -14,6 +14,7 @@ public class TypeClassify {
 	private static boolean isPublic(String url){
 		List<String> publicSites = new ArrayList<String>();
 		publicSites.add("tianya.com");
+		publicSites.add("tieba.baidu.com");
 		
 		for (String site : publicSites) {
 			if(url.contains(site)) return true;

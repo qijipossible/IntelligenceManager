@@ -40,13 +40,13 @@ public class MonitorManager {
 			
 			if(left == 0) return Attributes.SPIDER_DONE;
 			
-			sb.append("正在爬取页面...已扫描");
-			sb.append(success);
-			sb.append("页，已成功下载符合要求的页面");
-			sb.append(DataManager.getCountPipeline());
-			sb.append("页，队列中剩余");
-			sb.append(left);
-			sb.append("页");
+			sb.append("正在爬取页面...已扫描")
+			.append(success)
+			.append("页，已成功下载符合要求的页面")
+			.append(DataManager.getCountPipeline())
+			.append("页，队列中剩余")
+			.append(left)
+			.append("页");
 			return sb.toString();
 		}
 		else {

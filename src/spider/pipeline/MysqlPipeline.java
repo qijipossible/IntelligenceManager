@@ -41,7 +41,54 @@ public class MysqlPipeline implements Pipeline {
 		List<Date> times = null;
 		
 		System.out.print("pipeline processing.\n");
+		if(resultItems.get("url") != null) url = resultItems.get("url");
 		
+		//若为评论
+		if (resultItems.get("comment") != null) {
+			comments = (List<String>) resultItems.get("comment");
+			if (resultItems.get("times") != null) {
+				List<String> temps = (List<String>) resultItems.get("times");
+				times=new ArrayList<Date>();
+				for (String temp : temps) {
+					temp=temp.trim().replace(" ", "").replace(" ", "");
+					temp = temp.replace("年", "-");
+					temp = temp.replace("月", "-");
+					temp = temp.replace("：", "");
+					temp = temp.replaceAll("[\u4e00-\u9fa5]+", "");
+					temp = temp.replaceAll("【", "");
+					temp = temp.replaceAll("】", "");
+					if (temp.length() > 10)
+						temp = temp.substring(0, 10);
+					if (temp.length() < 10) {
+						if (temp.length()
+								- temp.indexOf("-", temp.indexOf("-") + 1) < 4)
+							temp = temp
+									.substring(0, temp.indexOf("-",
+											temp.indexOf("-") + 1) + 1)
+									+ "0"
+									+ temp.substring(temp.indexOf("-",
+											temp.indexOf("-") + 1) + 1, temp
+											.length() - 1);
+					}
+					try {
+						times.add(java.sql.Date.valueOf(temp));
+					} catch (Exception e) {
+						System.out.println(e + "\n数据库存入的时间信息格式有误");
+						times.add(null);
+					}
+				}
+			}
+
+			String keyword = DataManager.getKeyword() + "公众评论";
+			for (String comment : comments) {
+				other = Float.toString(Motion.getAssessment(comment));
+				DatabaseHelper.save(
+						new Record("公众", keyword, comment, url, times.get(comments.indexOf(comment)), author, other, 0));
+			}
+			return;
+		}
+		
+		//不为评论
 		if(resultItems.get("title") != null) title = resultItems.get("title");
 		if(resultItems.get("content") != null) content = resultItems.get("content");
 		if(resultItems.get("time") != null){
@@ -51,11 +98,10 @@ public class MysqlPipeline implements Pipeline {
 				System.out.println(e + "\n数据库存入的时间信息格式有误");
 			}
 		}
-		if(resultItems.get("url") != null) url = resultItems.get("url");
 		type = TypeClassify.typeClassifyByUrl(url);
 		other = Float.toString(Motion.getAssessment(content));
 		
-		DataManager.count1Plus();//TODO delete
+		DataManager.countPipelinePlus();
 		DatabaseHelper.save(new Record(type, title, content, url, time, "", other, 0));
 		
 		
@@ -103,56 +149,8 @@ public class MysqlPipeline implements Pipeline {
 				type = entry.getValue().toString();
 			} else if (entry.getKey().equals("other")) {
 				other = entry.getValue().toString();
-			} else if (entry.getKey().equals("comment")) {
-				comments = (List<String>) entry.getValue();
-			} else if (entry.getKey().equals("times")) {
-				List<String> temps = (List<String>) entry.getValue();
-				times=new ArrayList<Date>();
-				for (String temp : temps) {
-					temp=temp.trim().replace(" ", "").replace(" ", "");
-					temp = temp.replace("年", "-");
-					temp = temp.replace("月", "-");
-					temp = temp.replace("：", "");
-					temp = temp.replaceAll("[\u4e00-\u9fa5]+", "");
-					temp = temp.replaceAll("【", "");
-					temp = temp.replaceAll("】", "");
-					if (temp.length() > 10)
-						temp = temp.substring(0, 10);
-					if (temp.length() < 10) {
-						if (temp.length()
-								- temp.indexOf("-", temp.indexOf("-") + 1) < 4)
-							temp = temp
-									.substring(0, temp.indexOf("-",
-											temp.indexOf("-") + 1) + 1)
-									+ "0"
-									+ temp.substring(temp.indexOf("-",
-											temp.indexOf("-") + 1) + 1, temp
-											.length() - 1);
-					}
-					try {
-						times.add(java.sql.Date.valueOf(temp));
-					} catch (Exception e) {
-						System.out.println(e + "\n数据库存入的时间信息格式有误");
-						times.add(null);
-					}
-				}
-
-			}
-
-		}
-		if (comments != null) {
-			String keyword = DataManager.getKeyword() + "公众评论";
-			for (String comment : comments) {
-				//TODO 这里会出现评论重复写入数据库的情况，所以进行了修改，不知原写法作用何在故没有删去，若没用可及时删去 by qiji
-				//for (Date atime : times){
-				other = Float.toString(Motion.getAssessment(comment));
-				DatabaseHelper.save(new Record("公众", keyword, comment, url, times.get(comments.indexOf(comment)), author, other, 0));
-				//TODO 这里能不能将评论所在文章标题写入title？
-				//}
-			}
-		} else if (content != null && !content.replaceAll("\n", "").equals("")){
-			other = Float.toString(Motion.getAssessment(content));
-			DatabaseHelper.save(new Record(type, title, content, url, time, author, other, 0));
-		}*/
+			} else
+			*/
+		
 	}
 }

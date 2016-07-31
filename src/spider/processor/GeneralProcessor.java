@@ -50,7 +50,7 @@ public class GeneralProcessor implements PageProcessor {
 			page.putField("url", url);
 
 			String title = Jsoup.parse(html.$("title").toString()).text();
-			if(title == null || !Transform.containsPartOfKeyword(title, DataManager.getKeyword())){
+			if(title == null || !Transform.containsPartOfKeyword(title, "公车改革")){
 				System.err.println("title is null, page skipped.\n");
 				page.setSkip(true);
 				return;
@@ -66,7 +66,7 @@ public class GeneralProcessor implements PageProcessor {
 			}
 			page.putField("content", content);
 			
-			Pattern pattern = Pattern.compile("(\\d{4})[^.0-9](\\d{1,2})[^.0-9](\\d{1,2})");
+			Pattern pattern = Pattern.compile("(20[0-1][0-9])[^.0-9]([0-1]?[0-9])[^.0-9]([0-3]?[0-9])");
 			Matcher matcher = pattern.matcher(html.toString());
 			if (matcher.find()) {
 				String year = matcher.group(1);
@@ -77,7 +77,7 @@ public class GeneralProcessor implements PageProcessor {
 				page.putField("time", time);
 
 			} else {
-				pattern = Pattern.compile("(\\d{1,2})[^.0-9](\\d{1,2})");
+				pattern = Pattern.compile("([0-1]?[0-9])[^.0-9]([0-1]?[0-9])");
 				matcher = pattern.matcher(html.toString());
 				if (matcher.find()) {
 					int year = Calendar.YEAR;
