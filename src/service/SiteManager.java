@@ -6,6 +6,9 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import spider.utils.UrlUtil;
+import us.codecraft.webmagic.Spider;
+
 public class SiteManager {
 	
 	//爬取到的网页地址
@@ -33,11 +36,7 @@ public class SiteManager {
 			ArrayList<String> list = new ArrayList<String>();
 			//取域名部分
 			for(String rawSite:getRawSites()){
-				Pattern p = Pattern.compile("(?<=http://)[^/]*(?=/)");
-				Matcher m = p.matcher(rawSite);
-				while(m.find()){
-					list.add("http://"+m.group()+"/");
-				}
+					list.add("http://"+UrlUtil.getDomain(rawSite)+"/");
 			}
 			//去重
 			HashSet<String> set = new HashSet<String>(list);

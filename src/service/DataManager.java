@@ -17,7 +17,7 @@ import com.mysql.jdbc.Util;
 
 import service.keyword.NLP;
 import service.motion.Motion;
-import util.RecordTrans;
+import util.Transform;
 import database.DatabaseHelper;
 import database.SearchType;
 import entity.Record;
@@ -27,7 +27,28 @@ import entity.Record;
  * 该类用于暂存数据，以完成数据从计算部分到UI部分的传递。
  */
 public class DataManager {
+	static private int count1 = 0;
+	static public void count1Plus(){
+		count1++;
+	}
+	static public int getCount1(){
+		return count1;
+	}
+	static public void resetCount1(){
+		count1= 0;
+	}
 	
+
+	static private int countPipeline = 0;
+	static public void countPipelinePlus(){
+		countPipeline++;
+	}
+	static public int getCountPipeline(){
+		return countPipeline;
+	}
+	static public void resetCountPipeline(){
+		countPipeline= 0;
+	}
 	
 	//关键词
 	static private String keyword = null;

@@ -2,6 +2,8 @@ package spider.pipeline;
 
 import service.DataManager;
 import service.motion.Motion;
+import spider.utils.TypeClassify;
+import spider.utils.UrlUtil;
 import us.codecraft.webmagic.ResultItems;
 import us.codecraft.webmagic.Task;
 import us.codecraft.webmagic.pipeline.Pipeline;
@@ -10,6 +12,8 @@ import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import org.apache.derby.vti.IFastPath;
 
 import database.DatabaseHelper;
 import entity.Record;
@@ -48,10 +52,11 @@ public class MysqlPipeline implements Pipeline {
 			}
 		}
 		if(resultItems.get("url") != null) url = resultItems.get("url");
-		//if(resultItems.get("title") != null) title = resultItems.get("title");
-		//if(resultItems.get("title") != null) title = resultItems.get("title");
+		type = TypeClassify.typeClassifyByUrl(url);
+		other = Float.toString(Motion.getAssessment(content));
 		
-		DatabaseHelper.save(new Record("", title, content, url, time, "", "", 0));
+		DataManager.count1Plus();//TODO delete
+		DatabaseHelper.save(new Record(type, title, content, url, time, "", other, 0));
 		
 		
 		/*System.out.println("get page: " + resultItems.getRequest().getUrl());

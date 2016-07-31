@@ -19,8 +19,8 @@ import service.chart.tagcloud.TagCloud;
 import service.keyword.Keyword;
 import service.keyword.NLP;
 import service.motion.Motion;
-//import spider.helper.Crawler;
-import util.RecordTrans;
+import spider.helper.Crawler;
+import util.Transform;
 import vision.AllData;
 import vision.MainWindow;
 import vision.ResultStatistic;
@@ -32,19 +32,19 @@ import entity.Record;
 public class Controller {
 	
 	public static boolean isrunning = false;
-	//private static Crawler crawler = new Crawler();
+	private static Crawler crawler = new Crawler();
 	public static void startCrawl(String keyword)
 	{
-		DataManager.setKeyword(keyword);
 		isrunning = true;
-		boolean[] options = {true,true,true,true,false,false};
-		//crawler.start(keyword, options);
+		DataManager.setKeyword(keyword);
+		DataManager.resetCountPipeline();
+		crawler.start();
 	}
 	
 	public static void stopCrawl()
 	{
 		isrunning = false;
-		//crawler.stop();
+		crawler.stop();
 	}
 
 	public static void showResult(String keyword, SearchResult panel1, ResultStatistic panel2, AllData panel3){
@@ -69,13 +69,13 @@ public class Controller {
 		nums[3] = DataManager.getRecordNum()[2];
 		nums[4] = DataManager.getRecordNum()[3];
 		List<String> views = new ArrayList<String>(8);
-		views.add(util.RecordTrans.strings2stringWithComma(Keyword.getKeyword(DataManager.getRecordsOpinionIndexDistribution().get(10), Configure.KEYWORD_SIZE_NORMAL)));
-		views.add(util.RecordTrans.strings2stringWithComma(Keyword.getKeyword(DataManager.getRecordsOpinionIndexDistribution().get(0), Configure.KEYWORD_SIZE_NORMAL)));
+		views.add(util.Transform.strings2stringWithComma(Keyword.getKeyword(DataManager.getRecordsOpinionIndexDistribution().get(10), Configure.KEYWORD_SIZE_NORMAL)));
+		views.add(util.Transform.strings2stringWithComma(Keyword.getKeyword(DataManager.getRecordsOpinionIndexDistribution().get(0), Configure.KEYWORD_SIZE_NORMAL)));
 		views.add(Integer.toString(DataManager.getPosMax()));
-		views.add(util.RecordTrans.strings2stringWithComma(Keyword.getKeyword(DataManager.getRecordsOpinionIndexDistribution().get(DataManager.getPosMax()+5), Configure.KEYWORD_SIZE_NORMAL)));
+		views.add(util.Transform.strings2stringWithComma(Keyword.getKeyword(DataManager.getRecordsOpinionIndexDistribution().get(DataManager.getPosMax()+5), Configure.KEYWORD_SIZE_NORMAL)));
 		views.add(NLP.recordsSummary(DataManager.getRecordsOpinionIndexDistribution().get(DataManager.getPosMax()+5)));
 		views.add(Integer.toString(DataManager.getNegMax()));
-		views.add(util.RecordTrans.strings2stringWithComma(Keyword.getKeyword(DataManager.getRecordsOpinionIndexDistribution().get(DataManager.getNegMax()+5), Configure.KEYWORD_SIZE_NORMAL)));
+		views.add(util.Transform.strings2stringWithComma(Keyword.getKeyword(DataManager.getRecordsOpinionIndexDistribution().get(DataManager.getNegMax()+5), Configure.KEYWORD_SIZE_NORMAL)));
 		views.add(NLP.recordsSummary(DataManager.getRecordsOpinionIndexDistribution().get(DataManager.getNegMax()+5)));
 		HtmlMaker.entrance(
 				DataManager.getKeyword(),

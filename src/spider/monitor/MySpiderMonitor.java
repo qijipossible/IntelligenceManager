@@ -1,4 +1,4 @@
-package spider;
+package spider.monitor;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,6 +14,7 @@ import us.codecraft.webmagic.monitor.SpiderStatusMXBean;
 import us.codecraft.webmagic.utils.Experimental;
 
 import javax.management.*;
+
 import java.lang.management.ManagementFactory;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -27,6 +28,7 @@ public class MySpiderMonitor extends SpiderMonitor {
 	private static SpiderMonitor INSTANCE = new MySpiderMonitor();
 	MonitorSpiderListener monitorSpiderListener = new MonitorSpiderListener();
 	Map<Spider,SpiderStatusMXBean> map = new HashMap<>();
+	
 	public SpiderStatusMXBean getSpiderStatusMBean(Spider spider) {
 		if(map.containsKey(spider)){
 			return map.get(spider);
@@ -40,6 +42,8 @@ public class MySpiderMonitor extends SpiderMonitor {
 	public static SpiderMonitor instance() {
 		return INSTANCE;
 	}
+	
+	
 	public static void main(String args[]) {
 		Spider spider = Spider.create(new GeneralProcessor());
 		// spider.addUrl("http://www.most.gov.cn/kjbgz/201607/t20160707_126445.htm");
@@ -51,6 +55,7 @@ public class MySpiderMonitor extends SpiderMonitor {
 			SpiderMonitor.instance().register(spider);
 //			MonitorableScheduler scheculer = (MonitorableScheduler) spider.getScheduler();
 //			System.out.println(scheculer.getLeftRequestsCount(spider));
+			
 			MySpiderMonitor spiderMonitor = (MySpiderMonitor) MySpiderMonitor.instance();
 			SpiderStatusMXBean bean = spiderMonitor.getSpiderStatusMBean(spider);
 			System.err.println(bean.getLeftPageCount());

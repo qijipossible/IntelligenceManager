@@ -7,6 +7,8 @@ import java.util.regex.Pattern;
 import javax.management.JMException;
 
 import org.jsoup.Jsoup;
+
+import properties.Configure;
 import service.DataManager;
 import us.codecraft.webmagic.Page;
 import us.codecraft.webmagic.Site;
@@ -14,13 +16,14 @@ import us.codecraft.webmagic.Spider;
 import us.codecraft.webmagic.monitor.SpiderMonitor;
 import us.codecraft.webmagic.processor.PageProcessor;
 import us.codecraft.webmagic.selector.Html;
+import util.Transform;
 
 public class GeneralProcessor implements PageProcessor {
 	
 	public static final String URL_LIST = "http://cn\\.bing\\.com/search\\?q.*";
 	
 	private Site site = Site.me()
-			.setSleepTime(3000);
+			.setSleepTime(Configure.SPIDER_SLEEP_TIME);
 			//.setUserAgent("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_7_2) AppleWebKit/537.31 (KHTML, like Gecko) Chrome/26.0.1410.65 Safari/537.31");
 
 	@Override
@@ -47,7 +50,7 @@ public class GeneralProcessor implements PageProcessor {
 			page.putField("url", url);
 
 			String title = Jsoup.parse(html.$("title").toString()).text();
-			if(title == null){
+			if(title == null || !Transform.containsPartOfKeyword(title, DataManager.getKeyword())){
 				System.err.println("title is null, page skipped.\n");
 				page.setSkip(true);
 				return;
@@ -56,7 +59,7 @@ public class GeneralProcessor implements PageProcessor {
 			System.out.print("title: "+title+"\n");
 
 			String content = html.smartContent().get();
-			if(content == null || content.indexOf(DataManager.getKeyword()) == -1){
+			if(content == null || !content.contains(DataManager.getKeyword())){
 				System.err.println("content is null, page skipped.\n");
 				page.setSkip(true);
 				return;

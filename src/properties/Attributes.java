@@ -45,5 +45,9 @@ public class Attributes
 	public static final String KEYWORD = "关键词";
 	
 	public static final String CHART = "统计图表";
+	
+	public static final String SPIDER_NOT_RUNNING = "爬虫正在准备...";
+	
+	public static final String SPIDER_DONE = "爬取结束";
 			
 }
