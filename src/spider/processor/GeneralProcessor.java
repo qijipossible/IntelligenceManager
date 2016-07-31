@@ -1,6 +1,7 @@
 package spider.processor;
 
 import java.util.Calendar;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -19,32 +20,28 @@ import us.codecraft.webmagic.selector.Html;
 import util.Transform;
 
 public class GeneralProcessor implements PageProcessor {
-	
+
 	public static final String URL_LIST = "http://cn\\.bing\\.com/search\\?q.*";
 	
 	private Site site = Site.me()
 			.setSleepTime(Configure.SPIDER_SLEEP_TIME);
-			//.setUserAgent("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_7_2) AppleWebKit/537.31 (KHTML, like Gecko) Chrome/26.0.1410.65 Safari/537.31");
 
 	@Override
 	public void process(Page page) {
 		System.out.print("processor processing.\n");
 		if (page.getUrl().regex(URL_LIST).match()) {
 			page.addTargetRequests(page.getHtml()
-					//.xpath("//a[@class='sb_pagN']")
-					.css("a.sb_pagN")
-					.links()
-					.all());
+					// .xpath("//a[@class='sb_pagN']")
+					.css("a.sb_pagN").links().all());
 			page.addTargetRequests(page.getHtml()
-					//.xpath("//li[@class='b_algo']").links()
-					.css("li.b_algo").links()
-					.all());
+					// .xpath("//li[@class='b_algo']").links()
+					.css("li.b_algo").links().all());
 			page.setSkip(true);
 			System.err.println("search list, page skipped.\n");
-		} else{
+		} else {
 			Html html = page.getHtml();
 			System.out.print("///////////////////////////////////////////////////\n");
-			
+
 			String url = page.getUrl().toString();
 			System.out.print("page get: " + url + "\n");
 			page.putField("url", url);
@@ -56,7 +53,7 @@ public class GeneralProcessor implements PageProcessor {
 				return;
 			}
 			page.putField("title", title);
-			System.out.print("title: "+title+"\n");
+			System.out.print("title: " + title + "\n");
 
 			String content = html.smartContent().get();
 			if(content == null || !content.contains(DataManager.getKeyword())){
@@ -65,7 +62,6 @@ public class GeneralProcessor implements PageProcessor {
 				return;
 			}
 			page.putField("content", content);
-			
 			Pattern pattern = Pattern.compile("(20[0-1][0-9])[^.0-9]([0-1]?[0-9])[^.0-9]([0-3]?[0-9])");
 			Matcher matcher = pattern.matcher(html.toString());
 			if (matcher.find()) {
@@ -86,21 +82,25 @@ public class GeneralProcessor implements PageProcessor {
 					String time = year + "-" + month + "-" + day;
 					// System.out.println(time);
 					page.putField("time", time);
+				} else {
+					int year = Calendar.getInstance().YEAR;
+					int month = Calendar.getInstance().MONTH;
+					// int day = Calendar.getInstance().;
 				}
 			}
 
-			String domain = site.getDomain();
-
-			/*
-			List<String> links = html.links().all();
-			for (String link : links) {
-				if (link.contains(domain)) {
-					page.addTargetRequest(link);
-				}
-
-			}*/
 		}
-		
+
+		String domain = site.getDomain();
+
+//		List<String> links = page.getHtml().links().all();
+//		for (String link : links) {
+//			if (link.contains(domain)) {
+//				page.addTargetRequest(link);
+//			}
+//
+//		}
+
 	}
 
 	@Override
