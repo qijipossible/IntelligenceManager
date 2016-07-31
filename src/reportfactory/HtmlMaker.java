@@ -184,7 +184,7 @@ public class HtmlMaker {
 		for(int i=1;i<=4;i++){
 			for(int j=1;j<=4;j++){
 				string = "t" + Integer.toString(i) + Integer.toString(j);
-				map.put(string, DataManager.getNounKeywords().get(i).get(j));
+				map.put(string, DataManager.getNounKeywords().get(i).get(j-1));
 			}
 		}
 		
@@ -213,11 +213,9 @@ public class HtmlMaker {
 		map.put("posWord", views.get(0));
 		map.put("negWord", views.get(1));
 		map.put("indexPos", views.get(2));
-		map.put("posTypicalWord", views.get(3));
-		map.put("viewPos", views.get(4));
-		map.put("indexNeg", views.get(5));
-		map.put("negTypicalWord", views.get(6));
-		map.put("viewNeg", views.get(7));
+		map.put("viewPos", views.get(3));
+		map.put("indexNeg", views.get(4));
+		map.put("viewNeg", views.get(5));
 		map.put("pipData",ChartData.getTestPipData());
 		map.put("yearData", ChartData.getTestYearData());
 		map.put("motionData",ChartData.getTestMotionData(DataManager.getAllDistribution()));
