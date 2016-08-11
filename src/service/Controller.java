@@ -38,6 +38,7 @@ public class Controller {
 		isrunning = true;
 		DataManager.setKeyword(keyword);
 		DataManager.resetCountPipeline();
+		SiteManager.reset();
 		crawler.start();
 	}
 	
@@ -63,7 +64,7 @@ public class Controller {
 	public static void makeReport(){
 		System.out.print("Make report\n");
 		int[] nums = new int[5];
-		nums[0] = SiteManager.getSitesSize();
+		nums[0] = SiteManager.getSitesSizeWithoutSpider();
 		nums[1] = DataManager.getRecordNum()[0];
 		nums[2] = DataManager.getRecordNum()[1];
 		nums[3] = DataManager.getRecordNum()[2];

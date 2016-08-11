@@ -150,7 +150,7 @@ public class HtmlMaker {
 		map.put("thirdIndex", indexAllList.get(2).getKey());
 		map.put("govPaper", Integer.toString(nums[2]));
 		map.put("govPercent", Float.toString(nums[2]*100.0f/nums[1]));
-		map.put("medPaper", Integer.toString(nums[2]));
+		map.put("medPaper", Integer.toString(nums[3]));
 		map.put("medPercent", Float.toString(nums[3]*100.0f/nums[1]));
 		map.put("pubPaper", Integer.toString(nums[4]));
 		map.put("pubPercent", Float.toString(nums[4]*100.0f/nums[1]));

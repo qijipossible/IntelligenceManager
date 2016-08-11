@@ -125,6 +125,7 @@ public class MainWindow
 							
 							@Override
 							public void run() {
+								Controller.isrunning = true;
 								Controller.startCrawl(getInput());
 							}
 						}).start();
@@ -149,7 +150,7 @@ public class MainWindow
 								}while(Controller.isrunning);
 								JOptionPane.showMessageDialog(
 										null,
-										"搜索结束！\n共扫描了"+String.valueOf(monitor.getSuccess())+"个页面"
+										"搜索结束！\n共扫描了"+String.valueOf(monitor.getTotal())+"个页面"
 												+ "\n成功下载"+String.valueOf(DataManager.getCountPipeline())
 												+ "页",
 										"搜索结束",

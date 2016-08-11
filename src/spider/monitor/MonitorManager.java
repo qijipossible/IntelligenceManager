@@ -31,15 +31,13 @@ public class MonitorManager {
 		if(siteSearchBean == null && spidersBeans == null) return Attributes.SPIDER_NOT_RUNNING;
 		if(spidersBeans != null){
 			StringBuilder sb = new StringBuilder();
-			int sum=0, left=0, success=0;
+			int left=0, success=0;
 			for(SpiderStatusMXBean bean :spidersBeans){
-				sum += bean.getTotalPageCount();
 				left += bean.getLeftPageCount();
 				success += bean.getSuccessPageCount();
 			}
 			
 			if(left == 0) return Attributes.SPIDER_DONE;
-			
 			sb.append("正在爬取页面...已扫描")
 			.append(success)
 			.append("页，已成功下载符合要求的页面")
@@ -58,12 +56,12 @@ public class MonitorManager {
 		}
 	}
 	
-	public int getSuccess(){
-		int success=0;
+	public int getTotal(){
+		int total=0;
 		for(SpiderStatusMXBean bean :spidersBeans){
-			success += bean.getSuccessPageCount();
+			total += bean.getSuccessPageCount();
 		}
-		return success;
+		return total;
 	}
 	
 	private MonitorManager(){

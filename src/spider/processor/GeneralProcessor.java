@@ -28,7 +28,7 @@ public class GeneralProcessor implements PageProcessor {
 
 	@Override
 	public void process(Page page) {
-		System.out.print("processor processing.\n");
+		System.out.print("\nprocessor processing\n");
 		if (page.getUrl().regex(URL_LIST).match()) {
 			page.addTargetRequests(page.getHtml()
 					// .xpath("//a[@class='sb_pagN']")
@@ -37,10 +37,9 @@ public class GeneralProcessor implements PageProcessor {
 					// .xpath("//li[@class='b_algo']").links()
 					.css("li.b_algo").links().all());
 			page.setSkip(true);
-			System.err.println("search list, page skipped.\n");
+			System.err.println("search list, page skipped."+page.getUrl().get()+"\n");
 		} else {
 			Html html = page.getHtml();
-			System.out.print("///////////////////////////////////////////////////\n");
 
 			String url = page.getUrl().toString();
 			System.out.print("page get: " + url + "\n");
@@ -76,22 +75,20 @@ public class GeneralProcessor implements PageProcessor {
 				pattern = Pattern.compile("([0-1]?[0-9])[^.0-9]([0-1]?[0-9])");
 				matcher = pattern.matcher(html.toString());
 				if (matcher.find()) {
-					int year = Calendar.YEAR;
-					String month = matcher.group(2);
-					String day = matcher.group(3);
+					String year = "2016";
+					String month = matcher.group(1);
+					String day = matcher.group(2);
 					String time = year + "-" + month + "-" + day;
 					// System.out.println(time);
 					page.putField("time", time);
 				} else {
-					int year = Calendar.getInstance().YEAR;
-					int month = Calendar.getInstance().MONTH;
-					// int day = Calendar.getInstance().;
+					System.err.print("无时间信息");
+					page.setSkip(true);
+					return;
 				}
 			}
 
 		}
-
-		String domain = site.getDomain();
 
 //		List<String> links = page.getHtml().links().all();
 //		for (String link : links) {

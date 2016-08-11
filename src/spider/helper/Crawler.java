@@ -35,7 +35,7 @@ public class Crawler {
 		//搜索网站列表
 		String keyword = DataManager.getKeyword();
 		siteSpider = Spider.create(new SearchListProcessor())
-				.addUrl("http://cn.bing.com/search?q="+ keyword +"%22+filetype%3Ahtml")
+				.addUrl("http://cn.bing.com/search?q=%22"+ keyword +"%22")
 				.addPipeline(new SearchListPipeline())
 				.thread(1);
 		try {
@@ -46,17 +46,20 @@ public class Crawler {
 		siteSpider.run();
 		System.out.print("寻找网站结束，共找到"+SiteManager.getSitesSize()+"个网站\n");
 		
+		//根据网站列表搜索相关网页
+		List<String> sites = SiteManager.getSites();
+		System.out.print(sites);
+		System.out.print("\n");
+		LinkedBlockingQueue<String> queue = new LinkedBlockingQueue<String>(sites);
+		int spiderNum = Configure.SPIDER_NUMBER;//并行的爬虫数量
+		pageSpiders = new Spider[spiderNum];
+		int each = sites.size()/spiderNum + 1;//每个爬虫分到的网站数
+		
 		Spider.create(new TencentCommentProcessor())
 				.addUrl("http://cn.bing.com/search?q=site%3Acoral.qq.com+%22"+keyword+"%22")
 				.addPipeline(new MysqlPipeline())
 				.start();
 		
-		//根据网站列表搜索相关网页
-		List<String> sites = SiteManager.getSites();
-		LinkedBlockingQueue<String> queue = new LinkedBlockingQueue<>(sites);
-		int spiderNum = Configure.SPIDER_NUMBER;//并行的爬虫数量
-		pageSpiders = new Spider[spiderNum];
-		int each = sites.size()/spiderNum + 1;//每个爬虫分到的网站数
 		for (int i=0;i<spiderNum;i++) {
 			//每个爬虫分到each个网站
 			ArrayList<String> list = new ArrayList<String>();
@@ -68,7 +71,7 @@ public class Crawler {
 			pageSpiders[i] = Spider.create(new GeneralProcessor())
 					.addUrl(urls)
 					.addPipeline(new MysqlPipeline())
-					.thread(2);
+					.thread(1);
 			try {
 				spiderMonitor.register(pageSpiders[i]);
 			} catch (JMException e) {
@@ -88,9 +91,10 @@ public class Crawler {
 	}
 
 	public static void main(String[] args) {
-		Spider.create(new GeneralProcessor())
-		.addUrl("http://cn.bing.com/search?q=site%3Atianya.cn+%22公车改革%22")
-		.addPipeline(new MysqlPipeline())
+		Spider.create(new SearchListProcessor())
+		.addUrl("http://cn.bing.com/search?q=%22公车改革%22")
+		.addPipeline(new SearchListPipeline())
+		.thread(1)
 		.start();
 	}
 

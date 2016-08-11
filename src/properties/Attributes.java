@@ -22,6 +22,8 @@ public class Attributes
 	
 	public static final String REPORTBUTTON_PROCESSING = "正在生成";
 	
+	public static final String BUTTON_DELETE_ALL = "删除所有数据";
+	
 	public static final String SEARCHRESULTTAB = "搜索结果";
 	
 	public static final String RESULTSTATISTIC = "结果统计";

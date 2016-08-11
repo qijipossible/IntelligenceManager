@@ -90,18 +90,23 @@ public class MysqlPipeline implements Pipeline {
 		
 		//不为评论
 		if(resultItems.get("title") != null) title = resultItems.get("title");
+		System.out.print("title set. ");
 		if(resultItems.get("content") != null) content = resultItems.get("content");
+		System.out.print("content set. ");
 		if(resultItems.get("time") != null){
 			try {
 				time = java.sql.Date.valueOf((String) resultItems.get("time"));
+				System.out.print("time set. ");
 			} catch (Exception e) {
 				System.out.println(e + "\n数据库存入的时间信息格式有误");
+				return;
 			}
 		}
 		type = TypeClassify.typeClassifyByUrl(url);
+		System.out.print("type set. ");
 		other = Float.toString(Motion.getAssessment(content));
-		
-		DataManager.countPipelinePlus();
+		System.out.print("index set. \n");
+		System.out.print(DataManager.getCountPipeline());
 		DatabaseHelper.save(new Record(type, title, content, url, time, "", other, 0));
 		
 		

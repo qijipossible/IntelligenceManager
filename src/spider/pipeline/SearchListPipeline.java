@@ -27,6 +27,8 @@ public class SearchListPipeline implements Pipeline {
     	List<String> sites = resultItems.get("sites");
     	SiteManager.addSites(sites);
     	System.out.println(SiteManager.getRawSitesSize() + " sites get.");
+    	System.out.print(sites);
+    	System.out.print("\n");
     	//System.out.println("get sites: " + sites);
     	
     }

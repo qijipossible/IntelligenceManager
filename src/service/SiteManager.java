@@ -32,18 +32,10 @@ public class SiteManager {
 		getRawSites().add(newSite);
 	}
 	static public int getRawSitesSize(){
-		if(rawSites != null) return rawSites.size();
-		else{
-			ArrayList<String> list = new ArrayList<String>();
-			for(Record record:DataManager.getRecordsAll()) list.add(record.getBaseUrl());
-			//取域名部分
-			for(String rawSite:getRawSites()){
-				list.add(UrlUtil.getDomain(rawSite));
-			}
-			//去重
-			HashSet<String> set = new HashSet<String>(list);
-			return set.size();
+		if(rawSites == null){
+			getRawSites();
 		}
+		return rawSites.size();
 	}
 	
 	//处理过的域名
@@ -55,12 +47,13 @@ public class SiteManager {
 			for(String rawSite:getRawSites()){
 				if(rawSite.contains(".gov.cn")
 						||rawSite.contains("tianya.cn")) continue;//政府网站先删掉，后面统一添加
-				list.add("http://"+UrlUtil.getDomain(rawSite)+"/");
+				String domain = UrlUtil.getDomain(rawSite);
+				if(domain != null) list.add(domain);
 			}
 			//去重
 			HashSet<String> set = new HashSet<String>(list);
-			set.addAll(sitesToAdd);
 			list.clear();
+			list.addAll(sitesToAdd);
 			list.addAll(set);
 			sites = list;
 		}
@@ -73,4 +66,18 @@ public class SiteManager {
 		return sites.size();
 	}
 	
+	static public int getSitesSizeWithoutSpider(){
+		List<Record> records = DataManager.getRecordsAll();
+		HashSet<String> set = new HashSet<String>();
+		//取域名部分
+		for(Record record: records){
+			set.add(UrlUtil.getDomain(record.getBaseUrl()));
+		}
+		return set.size();
+	}
+	
+	static public void reset(){
+		rawSites = null;
+		sites = null;
+	}
 }

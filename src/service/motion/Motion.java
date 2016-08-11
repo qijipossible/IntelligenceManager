@@ -135,7 +135,7 @@ public class Motion {
 		float pos=0, neg=0, plus=1;
 		int not=0;
 		for(int i=0 , len = alwTemp.size() ;i < len ;i++){
-			System.out.println(alwTemp.get(i).sw1);
+			//System.out.println(alwTemp.get(i).sw1);
 			if(alwTemp.get(i).type==3){
 				plus=alwTemp.get(i).level;
 			}else if(alwTemp.get(i).type==2 || (alwTemp.get(i).type==1 && not==1)){

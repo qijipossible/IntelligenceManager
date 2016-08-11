@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -50,6 +51,20 @@ public class DataManager {
 	}
 	static public void resetCountPipeline(){
 		countPipeline= 0;
+	}
+	
+	static private HashSet<String> titlesHash = null;
+	static public boolean isDuplicate(String toCheck){
+		if(titlesHash == null){
+			titlesHash.add(toCheck);
+			return false;
+		}
+		if(titlesHash.contains(toCheck)){
+			return true;
+		}else{
+			titlesHash.add(toCheck);
+			return false;
+		}
 	}
 	
 	//关键词
@@ -418,6 +433,9 @@ public class DataManager {
 	}
 	
 	static private void reset(){
+		count1 = 0;
+		countPipeline = 0;
+		titlesHash = null;
 		recordsAll = null;
 		recordsGov = null;
 		recordsMedia = null;
@@ -427,12 +445,13 @@ public class DataManager {
 		hottestYear = null;
 		recordsOpinionIndexDistribution = null;
 		opinionIndexes = null;
-		keywords = null;
-		recordNums = null;
-		yearRecordList = null;
 		allDistribution = null;
 		govDistribution = null;
 		mediaDistribution = null;
 		publicDistribution = null;
+		keywords = null;
+		recordNums = null;
+		yearRecordList = null;
+		yearRecordNums = null;
 	}
 }
