@@ -47,10 +47,10 @@ public class RedirectableDownloader extends AbstractDownloader {
 			String line = "";
 			String output = "";
 			StringBuffer sb = new StringBuffer();
-			BufferedReader URLinput = new BufferedReader(new InputStreamReader(con.getInputStream(), "gbk"));
+			BufferedReader URLinput = new BufferedReader(new InputStreamReader(con.getInputStream(), "utf-8"));
 			while ((line = URLinput.readLine()) != null) {
 				sb.append(line);
-				output += line;
+				output += line+"\n";
 			}
 			con.disconnect();
 			if(con.getResponseCode() < 300){
@@ -98,6 +98,7 @@ public class RedirectableDownloader extends AbstractDownloader {
 		});
 		
 		spider.addUrl("https://www.baidu.com/link?url=dMtwtNe6rk2AcQvijR992EdmPWyVPFDHOg8fVejd6-gwMkMIV5Fx8-gbp2INkWF7KqhsztKqZCaDsd7MvUCVRa");
+		spider.setDownloader(new RedirectableDownloader());
 		spider.run();
 	}
 }
