@@ -29,7 +29,7 @@ import entity.Record;
 public class MysqlPipeline implements Pipeline {
 
 	@Override
-	public void process(ResultItems resultItems, Task task) {
+	public synchronized void process(ResultItems resultItems, Task task) {
 		String url = null;
 		String content = null;
 		Date time = null;
@@ -104,7 +104,12 @@ public class MysqlPipeline implements Pipeline {
 		}
 		type = TypeClassify.typeClassifyByUrl(url);
 		System.out.print("type set. ");
-		other = Float.toString(Motion.getAssessment(content));
+		try{
+			other = Float.toString(Motion.getAssessment(content));
+		}catch(Exception e){
+			e.printStackTrace();
+			return;
+		}
 		System.out.print("index set. \n");
 		System.out.print(DataManager.getCountPipeline());
 		DatabaseHelper.save(new Record(type, title, content, url, time, "", other, 0));

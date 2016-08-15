@@ -36,8 +36,10 @@ public class GeneralProcessor implements PageProcessor {
 			page.addTargetRequests(page.getHtml()
 					// .xpath("//li[@class='b_algo']").links()
 					.css("li.b_algo").links().all());
+			System.err.println("search list, page skipped."+page.getUrl().get()+"\n"+"from this page:");
+			System.out.print(page.getHtml().css("li.b_algo").links().all());
+			System.out.print("\n");
 			page.setSkip(true);
-			System.err.println("search list, page skipped."+page.getUrl().get()+"\n");
 		} else {
 			Html html = page.getHtml();
 
@@ -46,13 +48,13 @@ public class GeneralProcessor implements PageProcessor {
 			page.putField("url", url);
 
 			String title = Jsoup.parse(html.$("title").toString()).text();
-			if(title == null || !Transform.containsPartOfKeyword(title, "公车改革")){
+			System.out.print("title: " + title + "\n");
+			if(title == null || !Transform.containsPartOfKeyword(title, DataManager.getKeyword())){
 				System.err.println("title is null, page skipped.\n");
 				page.setSkip(true);
 				return;
 			}
 			page.putField("title", title);
-			System.out.print("title: " + title + "\n");
 
 			String content = html.smartContent().get();
 			if(content == null || !content.contains(DataManager.getKeyword())){
