@@ -9,8 +9,8 @@ public class Configure {
 	
 	public static final int SPIDER_NUMBER = 5;
 	
-	public static final int KEYWORD_SIZE_WHOLEWEB = 20;
-	public static final int KEYWORD_SIZE_NORMAL = 20;
+	public static final int KEYWORD_SIZE_WHOLEWEB = 30;
+	public static final int KEYWORD_SIZE_NORMAL = 30;
 	
 	public static final int REDUCE_RECORD_SIZE_KEYWORDS = 1000;
 	public static final int REDUCE_RECORD_SIZE_SUMMARY = 70;
