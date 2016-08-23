@@ -35,7 +35,7 @@ public class Crawler {
 		//搜索网站列表
 		String keyword = DataManager.getKeyword();
 		siteSpider = Spider.create(new SearchListProcessor())
-				.addUrl("http://cn.bing.com/search?q=%22"+ keyword +"%22")
+				.addUrl("http://cn.bing.com/search?q="+ keyword +"")
 				.addPipeline(new SearchListPipeline())
 				.thread(1);
 		try {
@@ -65,7 +65,7 @@ public class Crawler {
 			ArrayList<String> list = new ArrayList<String>();
 			for(int j=0;j<each;j++){
 				if(queue.peek() == null) break;
-				list.add("http://cn.bing.com/search?q=site%3A"+queue.poll()+"+%22"+keyword+"%22+filetype%3Ahtml");
+				list.add("http://cn.bing.com/search?q=site%3A"+queue.poll()+"+%22"+keyword+"%22");
 			}
 			String[] urls = list.toArray(new String[list.size()]);
 			pageSpiders[i] = Spider.create(new GeneralProcessor())
@@ -91,11 +91,18 @@ public class Crawler {
 	}
 
 	public static void main(String[] args) {
-		Spider.create(new SearchListProcessor())
-		.addUrl("http://cn.bing.com/search?q=%22公车改革%22")
-		.addPipeline(new SearchListPipeline())
+		/*DataManager.setKeyword("军民融合");
+		
+		Spider.create(new GeneralProcessor())
+		.addUrl("http://cn.bing.com/search?q=site%3Awww.jmrhw.org+%22%e5%86%9b%e6%b0%91%e8%9e%8d%e5%90%88%22+filetype%3ahtml&FORM=PORE")
+		.addPipeline(new MysqlPipeline())
 		.thread(1)
-		.start();
+		.start();*/
+		Spider.create(new SearchListProcessor())
+				.addUrl("http://cn.bing.com/search?q=公车改革")
+				.addPipeline(new SearchListPipeline())
+				.thread(1)
+				.start();
 	}
 
 }

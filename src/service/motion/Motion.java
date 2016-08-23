@@ -68,7 +68,7 @@ public class Motion {
 		计算输入的所有字符串的情感评估值的分布 int[] getAssessmentMap(List<String>)
 	 */
 	public static Map<String , DicStruct> map =new HashMap<String , DicStruct>();
-	public static char[] sDot= new char[1000];
+	public static char[] sDot= new char[65530];
 	public static int kDot=0;
 	private static float posMot = 0;
 	private static float negMot = 0;
@@ -77,13 +77,13 @@ public class Motion {
 		DicInit();
 	}
 	
-	public static  float getAssessment(String s){
+	public static synchronized float getAssessment(String s){
 		/*
 		 * 计算传入的字符串s的情感评估值
 		 */
 		if(s==null)
 			return (float)0.5;
-		posMot = 0 ;
+		posMot = 0;
 		negMot = 0;
 		String [] sArray = stringIntoWord(s);//分成句号为单位
 		for(int i = 0, len = sArray.length ; i < len ; i++){
