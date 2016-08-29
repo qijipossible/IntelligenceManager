@@ -13,6 +13,10 @@ hs_err_pid*
 
 /bin/
 /output/
+/myDatabase/
 /.settings/
 .classpath
 .project
+.gitignore
+derby.log
+/old/
