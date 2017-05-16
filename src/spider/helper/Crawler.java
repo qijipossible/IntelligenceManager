@@ -1,131 +1,108 @@
 package spider.helper;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.LinkedBlockingQueue;
 
-import spider.Spider;
-import spider.pipeline.ConsolePipeline;
+import javax.management.JMException;
+
+import properties.Configure;
+import service.DataManager;
+import service.SiteManager;
+import spider.monitor.MonitorManager;
+import spider.monitor.MySpiderMonitor;
+import spider.pipeline.SearchListPipeline;
 import spider.pipeline.MysqlPipeline;
-import spider.processor.example.Ifengnews;
-import spider.processor.example.Miit;
-import spider.processor.example.Most;
-import spider.processor.example.Patent;
-import spider.processor.example.Wanfang;
-import spider.processor.example.chinanews;
-import spider.processor.example.sdpc;
-import spider.processor.example.tencentComment;
+import spider.processor.GeneralProcessor;
+import spider.processor.SearchListProcessor;
+import spider.processor.TencentCommentProcessor;
+import us.codecraft.webmagic.Spider;
 
 public class Crawler {
-	String key;
-	boolean[] option;
-	Spider spider1 = null;
-	Spider spider2 = null;
-	Spider spider3 = null;
-	Spider spider4 = null;
-	Spider spider5 = null;
-	Spider spider6 = null;
-	Spider spider7 = null;
-	Spider spider8 = null;
-	// 0科技部，1工信部，2发改委，3论文，4专利，5新闻
+	
+	Spider siteSpider;
+	Spider[] pageSpiders;
+	MySpiderMonitor spiderMonitor;
+	MonitorManager monitorManager;
+	
+	public Crawler(){
+		spiderMonitor = (MySpiderMonitor) MySpiderMonitor.instance();
+		monitorManager = MonitorManager.getInstance();
+	}
+	
+	public void start(){
 
-	String[] website = { "www.most.gov.cn", "www.miit.gov.cn",
-			"www.sdpc.gov.cn" };
-
-	public void start(String key, boolean[] option) {
-		this.key = key;
-		this.option = option;
-
-		if (option[5] == true) {
-			spider4 = Spider.create(new Ifengnews());
-			spider4.addUrl(
-					"http://zhannei.baidu.com/cse/search?q=" + key
-							+ "&s=16378496155419916178").addPipeline(new ConsolePipeline())
-					.addPipeline(new MysqlPipeline()).thread(1).start();
-
+		//搜索网站列表
+		String keyword = DataManager.getKeyword();
+		siteSpider = Spider.create(new SearchListProcessor())
+				.addUrl("http://cn.bing.com/search?q="+ keyword +"")
+				.addPipeline(new SearchListPipeline())
+				.thread(1);
+		try {
+			spiderMonitor.register(siteSpider);
+			monitorManager.setSiteSearchSpider(siteSpider);
+		} catch (JMException e1) {
 		}
-		if (option[3] == true) {
-			//spider5 = Spider.create(new Wanfang());
-			//spider5.addUrl("http://s.wanfangdata.com.cn/Paper.aspx?q=" + key)
-			spider5 = Spider.create(new tencentComment(key));
-			spider5.addUrl("https://www.sogou.com/sogou?site=news.qq.com&query="+key+"&pid=sogou-wsse-b58ac8403eb9cf17-0004")
-			.addPipeline(new ConsolePipeline())
-					.addPipeline(new MysqlPipeline()).thread(2).start();
-
-		}
-		if (option[0] == true) {
-			spider1 = Spider.create(new Most());
-			spider1.addUrl(
-					"http://cn.bing.com/search?q=site%3A" + website[0] + "+%22"
-							+ key + "%22+filetype%3Ahtml")
-					.addPipeline(new ConsolePipeline())
-					.addPipeline(new MysqlPipeline()).thread(1).start();
-
-		}
-		if (option[1] == true) {
-			spider2 = Spider.create(new Miit());
-			spider2.addUrl(
-					"http://cn.bing.com/search?q=site%3A" + website[1] + "+%22"
-							+ key + "%22+filetype%3Ahtml")
-					.addPipeline(new ConsolePipeline())
-					.addPipeline(new MysqlPipeline()).thread(1).start();
-
-		}
-		if (option[2] == true) {
-			spider3 = Spider.create(new sdpc());
-			spider3.addUrl(
-					"http://cn.bing.com/search?q=site%3A" + website[2] + "+%22"
-							+ key + "%22+filetype%3Ahtml")
-					.addPipeline(new ConsolePipeline())
-					.addPipeline(new MysqlPipeline()).thread(1).start();
-			return;
-		}
-		if (option[4] == true) {
-			spider6 = Spider.create(new Patent("实用新型"));
-			String urlStr=null;
-			try {
-				urlStr = URLEncoder.encode(key, "UTF-8");
-			} catch (UnsupportedEncodingException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+		siteSpider.run();
+		System.out.print("寻找网站结束，共找到"+SiteManager.getSitesSize()+"个网站\n");
+		
+		//根据网站列表搜索相关网页
+		List<String> sites = SiteManager.getSites();
+		System.out.print(sites);
+		System.out.print("\n");
+		LinkedBlockingQueue<String> queue = new LinkedBlockingQueue<String>(sites);
+		int spiderNum = Configure.SPIDER_NUMBER;//并行的爬虫数量
+		pageSpiders = new Spider[spiderNum];
+		int each = sites.size()/spiderNum + 1;//每个爬虫分到的网站数
+		
+		Spider.create(new TencentCommentProcessor())
+				.addUrl("http://cn.bing.com/search?q=site%3Acoral.qq.com+%22"+keyword+"%22")
+				.addPipeline(new MysqlPipeline())
+				.start();
+		
+		for (int i=0;i<spiderNum;i++) {
+			//每个爬虫分到each个网站
+			ArrayList<String> list = new ArrayList<String>();
+			for(int j=0;j<each;j++){
+				if(queue.peek() == null) break;
+				list.add("http://cn.bing.com/search?q=site%3A"+queue.poll()+"+%22"+keyword+"%22");
 			}
-			spider6.addUrl(
-					"http://www2.soopat.com/Home/Result?SearchWord=" + urlStr
-							+ "&PatentIndex=0&Valid=2&SYXX=Y")
-					.addPipeline(new ConsolePipeline())
-					.addPipeline(new MysqlPipeline()).thread(1).start();
-			spider7 = Spider.create(new Patent("外观设计"));
-			spider7.addUrl(
-					"http://www2.soopat.com/Home/Result?SearchWord=" + urlStr
-							+ "&PatentIndex=0&Valid=2&WGZL=Y")
-					.addPipeline(new ConsolePipeline())
-					.addPipeline(new MysqlPipeline()).thread(1).start();
-			spider8 = Spider.create(new Patent("发明"));
-			spider8.addUrl(
-					"http://www2.soopat.com/Home/Result?SearchWord=" + urlStr
-							+ "&PatentIndex=01&Valid=2&FMZL=Y")
-					.addPipeline(new ConsolePipeline())
-					.addPipeline(new MysqlPipeline()).thread(1).start();
-
+			String[] urls = list.toArray(new String[list.size()]);
+			pageSpiders[i] = Spider.create(new GeneralProcessor())
+					.addUrl(urls)
+					.addPipeline(new MysqlPipeline())
+					.thread(1);
+			try {
+				spiderMonitor.register(pageSpiders[i]);
+			} catch (JMException e) {
+			}
+			pageSpiders[i].start();
 		}
-
+		monitorManager.setSpiders(pageSpiders);
+	}
+	
+	public void stop(){
+		if(siteSpider != null) siteSpider.stop();
+		if(pageSpiders == null) return;
+		for(int i=0;i<pageSpiders.length;i++){
+			if(pageSpiders[i] == null) continue;
+			pageSpiders[i].stop();
+		}
 	}
 
-	public void stop() {
-		if (spider1 != null)
-			spider1.close();
-		if (spider2 != null)
-			spider2.close();
-		if (spider3 != null)
-			spider3.close();
-		if (spider4 != null)
-			spider4.close();
-		if (spider5 != null)
-			spider5.close();
-		if (spider6 != null)
-			spider6.close();
-		if (spider7 != null)
-			spider7.close();
-		if (spider8 != null)
-			spider8.close();
+	public static void main(String[] args) {
+		/*DataManager.setKeyword("军民融合");
+		
+		Spider.create(new GeneralProcessor())
+		.addUrl("http://cn.bing.com/search?q=site%3Awww.jmrhw.org+%22%e5%86%9b%e6%b0%91%e8%9e%8d%e5%90%88%22+filetype%3ahtml&FORM=PORE")
+		.addPipeline(new MysqlPipeline())
+		.thread(1)
+		.start();*/
+		Spider.create(new SearchListProcessor())
+				.addUrl("http://cn.bing.com/search?q=公车改革")
+				.addPipeline(new SearchListPipeline())
+				.thread(1)
+				.start();
 	}
+
 }
