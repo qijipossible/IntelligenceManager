@@ -7,10 +7,10 @@ import spider.processor.GeneralProcessor;
 import us.codecraft.webmagic.Request;
 import us.codecraft.webmagic.Spider;
 import us.codecraft.webmagic.SpiderListener;
-import us.codecraft.webmagic.monitor.SpiderMonitor.MonitorSpiderListener;
-import us.codecraft.webmagic.monitor.SpiderMonitor;
-import us.codecraft.webmagic.monitor.SpiderStatus;
-import us.codecraft.webmagic.monitor.SpiderStatusMXBean;
+import spider.monitor.SpiderMonitor.MonitorSpiderListener;
+import spider.monitor.SpiderMonitor;
+import spider.monitor.SpiderStatus;
+import spider.monitor.SpiderStatusMXBean;
 import us.codecraft.webmagic.utils.Experimental;
 
 import javax.management.*;
