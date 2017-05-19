@@ -6,7 +6,7 @@ import java.util.Map;
 import service.SiteManager;
 import us.codecraft.webmagic.ResultItems;
 import us.codecraft.webmagic.Task;
-import us.codecraft.webmagic.monitor.SpiderMonitor;
+import spider.monitor.SpiderMonitor;
 import us.codecraft.webmagic.pipeline.Pipeline;
 
 /**

@@ -7,7 +7,7 @@ import properties.Attributes;
 import service.DataManager;
 import service.SiteManager;
 import us.codecraft.webmagic.Spider;
-import us.codecraft.webmagic.monitor.SpiderStatusMXBean;
+import spider.monitor.SpiderStatusMXBean;
 
 public class MonitorManager {
 

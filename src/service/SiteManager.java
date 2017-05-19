@@ -7,7 +7,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import entity.Record;
-import spider.utils.UrlUtil;
+import spider.utils.UrlUtils;
 import us.codecraft.webmagic.Spider;
 
 public class SiteManager {
@@ -47,7 +47,7 @@ public class SiteManager {
 			for(String rawSite:getRawSites()){
 				if(rawSite.contains(".gov.cn")
 						||rawSite.contains("tianya.cn")) continue;//政府网站先删掉，后面统一添加
-				String domain = UrlUtil.getDomain(rawSite);
+				String domain = UrlUtils.getDomain(rawSite);
 				if(domain != null) list.add(domain);
 			}
 			//去重
@@ -71,7 +71,7 @@ public class SiteManager {
 		HashSet<String> set = new HashSet<String>();
 		//取域名部分
 		for(Record record: records){
-			set.add(UrlUtil.getDomain(record.getBaseUrl()));
+			set.add(UrlUtils.getDomain(record.getBaseUrl()));
 		}
 		return set.size();
 	}
