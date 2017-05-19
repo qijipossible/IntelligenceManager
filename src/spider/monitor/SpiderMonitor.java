@@ -33,10 +33,10 @@ public class SpiderMonitor {
 
     private String jmxServerName;
 
-    private List<SpiderStatusMXBean> spiderStatuses = new ArrayList<SpiderStatusMXBean>();
+    public List<SpiderStatusMXBean> spiderStatuses = new ArrayList<SpiderStatusMXBean>();
 
     protected SpiderMonitor() {
-        jmxServerName = "WebMagic";
+        jmxServerName = "Spider";
         mbeanServer = ManagementFactory.getPlatformMBeanServer();
     }
 
@@ -68,7 +68,7 @@ public class SpiderMonitor {
         return new SpiderStatus(spider, monitorSpiderListener);
     }
 
-    public static SpiderMonitor instance() {
+    public static SpiderMonitor getInstance() {
         return INSTANCE;
     }
 
@@ -105,7 +105,6 @@ public class SpiderMonitor {
     }
 
     protected void registerMBean(SpiderStatusMXBean spiderStatus) throws MalformedObjectNameException, InstanceAlreadyExistsException, MBeanRegistrationException, NotCompliantMBeanException {
-//        ObjectName objName = new ObjectName(jmxServerName + ":name=" + spiderStatus.getName());
         ObjectName objName = new ObjectName(jmxServerName + ":name=" + UrlUtils.removePort(spiderStatus.getName()));
         mbeanServer.registerMBean(spiderStatus, objName);
     }

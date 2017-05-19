@@ -19,6 +19,15 @@ import java.util.regex.Pattern;
  * @since 0.1.0
  */
 public class UrlUtils {
+	
+	
+	public static String getSearchUrl(String keyword, int searchEngine){
+		switch(searchEngine){
+		case 1 :
+			return "http://cn.bing.com/search?q="+ keyword;
+		}
+		return "Illegal parameter: searchEngine = " + Integer.toString(searchEngine);
+	}
 
     /**
      * canonicalizeUrl
